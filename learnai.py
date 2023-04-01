@@ -93,30 +93,6 @@ print("Number of images from Training set:", total_train)
 print("Number of images from Validation set:", total_val)
 print("Number of images from Test set:", total_test)
 
-# # split training set into batches of 1000 entries each
-# nah bruh dont do this
-# use tensorflow's built in batch functionality instead
-
-# batch_threshold = 1000
-
-# train_batches = []
-# train_list = os.listdir(train_with_mask)
-
-# for i in range(len(train_list) // batch_threshold):
-#   batch_i = 'batch' + str(i)
-#   train_batches.append(os.path.join(train_with_mask, batch_i))
-
-# # print(len(os.listdir(train_with_mask)))
-
-# for i in range(len(train_list)): 
-#   img = train_list[i]
-#   current_batch = i // batch_threshold
-#   new_dir = os.path.join(train_with_mask, train_batches[current_batch])
-#   shutil.copy(os.path.join(train_with_mask, img), os.path.join(new_dir, img))
-
-# # for old_img in train_list:
-# #   shutil
-
 """# **DATA** **VISUALIZATION**"""
 
 #Main directory that includes Test, Train and Validation dataset
@@ -175,6 +151,7 @@ plot_images(test_data)
 
 # Define the classes
 classes = ['WithMask', 'WithoutMask']
+BATCH_SIZE = 32
 """
 # Define a function to load and preprocess the images
 def load_image(path):
@@ -190,15 +167,15 @@ def load_image(path):
 """
 
 train_ds = tf.keras.utils.image_dataset_from_directory(train_directory,
-                                                       batch_size=total_train,
+                                                       batch_size=BATCH_SIZE,
                                                        image_size=(224,224),
                                                        shuffle=True)
 validation_ds = tf.keras.utils.image_dataset_from_directory(val_directory,
-                                                            batch_size=total_val,
+                                                            batch_size=BATCH_SIZE,
                                                             image_size=(224,224),
                                                             shuffle=True)
 test_ds = tf.keras.utils.image_dataset_from_directory(test_directory,
-                                                      batch_size=total_test,
+                                                      batch_size=BATCH_SIZE,
                                                       image_size=(224,224),
                                                       shuffle=False)
 
@@ -264,13 +241,13 @@ validation_ds = validation_ds.cache().prefetch(buffer_size=AUTOTUNE)
 num_classes = 2
 model = tf.keras.Sequential([
   tf.keras.layers.Rescaling(1./255),
-  tf.keras.layers.Conv2D(32, 3, activation='relu', padding='same'),
+  tf.keras.layers.Conv2D(32, kernel_size=(3, 3), activation='relu', padding='same'),
   tf.keras.layers.MaxPooling2D(pool_size=(2,2)), #128x128
-  tf.keras.layers.Conv2D(64, 3, activation='relu', padding='same'),
+  tf.keras.layers.Conv2D(64, kernel_size=(3, 3), activation='relu', padding='same'),
   tf.keras.layers.MaxPooling2D(pool_size=(2,2)), #64x64
-  tf.keras.layers.Conv2D(128, 3, activation='relu', padding='same'),
+  tf.keras.layers.Conv2D(128, kernel_size=(3, 3), activation='relu', padding='same'),
   tf.keras.layers.MaxPooling2D(pool_size=(2,2)), #32x32
-  tf.keras.layers.Conv2D(256, 3, activation='relu', padding='same'),
+  tf.keras.layers.Conv2D(256, kernel_size=(3, 3), activation='relu', padding='same'),
   tf.keras.layers.MaxPooling2D(pool_size=(2,2)), #16x16
   tf.keras.layers.Flatten(),
   tf.keras.layers.Dense(256, activation='relu'),
@@ -290,6 +267,7 @@ earlystopping = callbacks.EarlyStopping(monitor ="val_loss",
 model.fit(
   train_ds,
   validation_data=validation_ds,
+  batch_size=BATCH_SIZE,
   epochs=1,
   callbacks =[earlystopping]
 )
