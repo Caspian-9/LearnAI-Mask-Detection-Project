@@ -179,59 +179,6 @@ test_ds = tf.keras.utils.image_dataset_from_directory(test_directory,
                                                       image_size=(224,224),
                                                       shuffle=False)
 
-# Load the training images in batches
-"""
-train_images = []
-train_labels = []
-
-def load_train():
-  for c in classes:
-      class_path = os.path.join(train_directory, c)
-      class_list = os.listdir(class_path)
-      for image_path in class_list:
-          img = load_image(os.path.join(class_path, image_path))
-          train_images.append(img)
-          train_labels.append(classes.index(c))
-
-  # Convert the lists to numpy arrays
-  train_images = np.array(train_images)
-  train_labels = np.array(train_labels)
-
-# Load the validation images
-val_images = []
-val_labels = []
-
-for c in classes:
-    class_path = os.path.join(val_directory, c)
-    for image_path in os.listdir(class_path):
-        img = load_image(os.path.join(class_path, image_path))
-        val_images.append(img)
-        val_labels.append(classes.index(c))
-
-# Convert the lists to numpy arrays
-val_images = np.array(val_images)
-val_labels = np.array(val_labels)
-
-# Load the test images
-test_images = []
-test_labels = []
-for c in classes:
-    class_path = os.path.join(test_directory, c)
-    for image_path in os.listdir(class_path):
-        img = load_image(os.path.join(class_path, image_path))
-        test_images.append(img)
-        test_labels.append(classes.index(c))
-
-# Convert the lists to numpy arrays
-test_images = np.array(test_images)
-test_labels = np.array(test_labels)
-
-# Convert the labels to categorical format
-train_labels = tf.keras.utils.to_categorical(train_labels, len(classes))
-val_labels = tf.keras.utils.to_categorical(val_labels, len(classes))
-test_labels = tf.keras.utils.to_categorical(test_labels, len(classes))
-"""
-
 # autotune buffer to avoid I/0 block
 AUTOTUNE = tf.data.AUTOTUNE
 
@@ -268,7 +215,7 @@ model.fit(
   train_ds,
   validation_data=validation_ds,
   batch_size=BATCH_SIZE,
-  epochs=1,
+  epochs=3,
   callbacks =[earlystopping]
 )
 
